@@ -1,10 +1,11 @@
 <template>
   <q-layout view="hHh LpR fFf">
-    <q-header elevated>
-      <q-bar class="q-pa-sm q-pl-md row items-center">
-        <div class="text-weight-bold">Logo</div>
+    <q-header elevated class="topbar q-pl-md row items-center">
+      <div class="text-weight-bold electron-only">Logo</div>
+      <div class="row q-col-gutter-md">
         <div class="cursor-pointer">
           {{ $t('menubar_project') }}
+          {{ $q.platform.is.electron ? '(F)' : '(F)' }}
           <q-menu>
             <q-list dense style="min-width: 100px">
               <q-item clickable v-close-popup>
@@ -61,15 +62,17 @@
             </q-list>
           </q-menu>
         </div>
-        <q-space />
-        <div class="col text-center text-weight-bold">
-          {{ '当前选择文件名（功能待完成）' }} - {{ $t('application') }}
-        </div>
-        <q-space />
+      </div>
+      <q-space />
+      <div class="col text-center text-weight-bold">
+        {{ '当前选择文件名（功能待完成）' }} - {{ $t('application') }}
+      </div>
+      <q-space />
+      <div class="electron-only">
         <q-btn dense flat icon="minimize" />
         <q-btn dense flat icon="crop_square" />
         <q-btn dense flat icon="close" />
-      </q-bar>
+      </div>
     </q-header>
 
     <aside
@@ -197,11 +200,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-function myTweak(offset: number) {
-  return {
-    minHeight: offset ? `calc(100vh - 36px - ${offset}px)` : '100vh',
-  };
-}
+// TODO: 根据一个Object渲染菜单，Object中定义名称，快捷键，调用的函数！
 
 // 定义两个变量，分别表示当前的选项卡，以及侧边栏是否展开
 const sidebar_tab = ref('mails');
@@ -209,3 +208,20 @@ const sidebar_drawer = ref(true);
 
 const splitterModel = ref(0);
 </script>
+
+<style lang="scss">
+$TOPBAR_HEIGHT: 32px;
+$TOOLBAR_MENU_PADDING: 5px;
+
+$BOTTOMBAR_HEIGHT: 16px;
+
+$SIDEBAR_WIDTH: 48px;
+$SIDEBAR_DRAWER_MIN_WIDTH: 5vw;
+
+.topbar {
+  height: $TOPBAR_HEIGHT;
+}
+
+.menubar {
+}
+</style>
