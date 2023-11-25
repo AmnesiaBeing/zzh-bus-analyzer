@@ -215,6 +215,10 @@ $SIDEBAR_WIDTH: 64px;
 $SIDEBAR_DRAWER_MIN_WIDTH: 5vw;
 
 header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   height: $TOPBAR_HEIGHT;
   background-color: $primary;
   color: white;
