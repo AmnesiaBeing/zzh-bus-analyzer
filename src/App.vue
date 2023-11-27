@@ -162,26 +162,9 @@
     </template>
 
     <template v-slot:after>
-      <q-tabs
-        v-model="filesbar_tab"
-        align="left"
-        dense
-        no-caps
-        style="border-bottom: 1px solid rgba(0, 0, 0, 0.12)"
-      >
-        <q-tab name="mails" label="Page One" />
-      </q-tabs>
-      <q-tab-panels v-model="sidebar_tab">
-        <q-tab-panel name="mails">
-          <div class="text-h4 q-mb-md">Mails</div>
-          <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis
-            praesentium cumque magnam odio iure quidem, quod illum numquam
-            possimus obcaecati commodi minima assumenda consectetur culpa fuga
-            nulla ullam. In, libero.
-          </p>
-        </q-tab-panel>
-      </q-tab-panels>
+      <main>
+        <div ref="canvas" class="canvas"></div>
+      </main>
     </template>
   </q-splitter>
 
@@ -196,13 +179,81 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
+import * as echarts from 'echarts';
+import { onMounted } from 'vue';
+
+const canvas = ref();
+
+onMounted(() => {
+  var option = {
+    title: {
+      text: 'Stacked Line',
+    },
+    tooltip: {
+      trigger: 'axis',
+    },
+    legend: {
+      data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true,
+    },
+    toolbox: {
+      feature: {
+        saveAsImage: {},
+      },
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    },
+    yAxis: {
+      type: 'value',
+    },
+    series: [
+      {
+        name: 'Email',
+        type: 'line',
+        stack: 'Total',
+        data: [120, 132, 101, 134, 90, 230, 210],
+      },
+      {
+        name: 'Union Ads',
+        type: 'line',
+        stack: 'Total',
+        data: [220, 182, 191, 234, 290, 330, 310],
+      },
+      {
+        name: 'Video Ads',
+        type: 'line',
+        stack: 'Total',
+        data: [150, 232, 201, 154, 190, 330, 410],
+      },
+      {
+        name: 'Direct',
+        type: 'line',
+        stack: 'Total',
+        data: [320, 332, 301, 334, 390, 330, 320],
+      },
+      {
+        name: 'Search Engine',
+        type: 'line',
+        stack: 'Total',
+        data: [820, 932, 901, 934, 1290, 1330, 1320],
+      },
+    ],
+  };
+  echarts.init(canvas.value).setOption(option);
+});
 
 // 定义两个变量，分别表示当前的选项卡，以及侧边栏是否展开
 const sidebar_tab = ref('files');
 const splitterModel = ref(0);
-const splitterModelShadow = ref(0);
-
-const filesbar_tab = ref('1');
+// const splitterModelShadow = ref(0);
 </script>
 
 <style lang="scss">
@@ -256,5 +307,11 @@ aside {
 
 .splitterbar:active {
   background-color: $primary;
+}
+
+.canvas {
+  padding: 10px;
+  width: 100%;
+  height: 100%;
 }
 </style>
