@@ -181,73 +181,114 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 import * as echarts from 'echarts';
 import { onMounted } from 'vue';
+import { onUnmounted } from 'vue';
 
 const canvas = ref();
 
+const testdata = [
+  [0, 0],
+  [1, 0],
+  [2, 0],
+  [3, 1],
+  [4, 1],
+  [5, 0],
+];
+const xList = testdata.map((item) => item[0]);
+const yList = testdata.map((item) => item[1]);
+const yList1 = yList.map((v) => v + 1);
+const yList2 = yList.map((v) => 1 - v);
+
+const g = 2;
+const p = 2;
+const n = 6;
+const topList = [...new Array(n).keys()].map(
+  (v) => p + ((100 - 2 * p + g) / n) * v
+);
+const gridValue = [...new Array(n).keys()].map((v) => {
+  return {
+    top: topList[v].toString() + '%',
+    bottom: topList[n - v - 1].toString() + '%',
+  };
+});
+
 onMounted(() => {
   var option = {
-    title: {
-      text: 'Stacked Line',
-    },
     tooltip: {
       trigger: 'axis',
     },
-    legend: {
-      data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'],
+    axisPointer: {
+      link: { xAxisIndex: 'all' },
     },
-    grid: {
-      left: '3%',
-      right: '4%',
-      bottom: '3%',
-      containLabel: true,
-    },
-    toolbox: {
-      feature: {
-        saveAsImage: {},
+    xAxis: [
+      {
+        data: xList,
+        show: false,
       },
-    },
-    xAxis: {
-      type: 'category',
-      boundaryGap: false,
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    },
-    yAxis: {
-      type: 'value',
-    },
+      {
+        data: xList,
+        show: false,
+        gridIndex: 1,
+      },
+      {
+        data: xList,
+        name: '时间',
+        axisLine: {
+          show: true,
+          symbol: ['none', 'arrow'],
+        },
+        gridIndex: 2,
+      },
+    ],
+    yAxis: [
+      {
+        axisLine: {
+          show: true,
+          symbol: ['none', 'arrow'],
+        },
+      },
+      {
+        axisLine: {
+          show: true,
+          symbol: ['none', 'arrow'],
+        },
+        gridIndex: 1,
+      },
+      {
+        axisLine: {
+          show: true,
+          symbol: ['none', 'arrow'],
+        },
+        gridIndex: 2,
+      },
+    ],
+    grid: gridValue,
     series: [
       {
-        name: 'Email',
         type: 'line',
-        stack: 'Total',
-        data: [120, 132, 101, 134, 90, 230, 210],
+        step: 'start',
+        data: yList,
       },
       {
-        name: 'Union Ads',
         type: 'line',
-        stack: 'Total',
-        data: [220, 182, 191, 234, 290, 330, 310],
+        step: 'start',
+        data: yList1,
+        xAxisIndex: 1,
+        yAxisIndex: 1,
       },
       {
-        name: 'Video Ads',
         type: 'line',
-        stack: 'Total',
-        data: [150, 232, 201, 154, 190, 330, 410],
-      },
-      {
-        name: 'Direct',
-        type: 'line',
-        stack: 'Total',
-        data: [320, 332, 301, 334, 390, 330, 320],
-      },
-      {
-        name: 'Search Engine',
-        type: 'line',
-        stack: 'Total',
-        data: [820, 932, 901, 934, 1290, 1330, 1320],
+        step: 'start',
+        data: yList2,
+        xAxisIndex: 2,
+        yAxisIndex: 2,
       },
     ],
   };
   echarts.init(canvas.value).setOption(option);
+});
+
+onUnmounted(() => {
+  echarts.dispose();
 });
 
 // 定义两个变量，分别表示当前的选项卡，以及侧边栏是否展开
@@ -312,6 +353,6 @@ aside {
 .canvas {
   padding: 10px;
   width: 100%;
-  height: 100%;
+  height: calc(100vh - $TOPBAR_HEIGHT - $BOTTOMBAR_HEIGHT);
 }
 </style>
