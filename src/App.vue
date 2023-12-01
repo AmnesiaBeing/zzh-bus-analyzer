@@ -211,6 +211,8 @@ const gridValue = [...new Array(n).keys()].map((v) => {
   };
 });
 
+let myChart: echarts.ECharts;
+
 onMounted(() => {
   var option = {
     tooltip: {
@@ -283,12 +285,30 @@ onMounted(() => {
         yAxisIndex: 2,
       },
     ],
+    dataZoom: [
+      {
+        show: true,
+        type: 'slider',
+        xAxisIndex: [0, 1, 2],
+      },
+      {
+        type: 'inside', // 支持内部鼠标滚动平移
+        startValue: 0,
+        endValue: 4,
+        zoomOnMouseWheel: false, // 关闭滚轮缩放
+        moveOnMouseWheel: true, // 开启滚轮平移
+        moveOnMouseMove: true, // 鼠标移动能触发数据窗口平移
+        xAxisIndex: [0, 2],
+      },
+    ],
   };
-  echarts.init(canvas.value).setOption(option);
+  myChart = echarts.init(canvas.value);
+  myChart.setOption(option);
+  window.addEventListener('resize', myChart.resize);
 });
 
 onUnmounted(() => {
-  echarts.dispose();
+  window.removeEventListener('resize', myChart.resize);
 });
 
 // 定义两个变量，分别表示当前的选项卡，以及侧边栏是否展开
