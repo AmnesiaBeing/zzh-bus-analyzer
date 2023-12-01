@@ -206,6 +206,8 @@ const topList = [...new Array(n).keys()].map(
 );
 const gridValue = [...new Array(n).keys()].map((v) => {
   return {
+    left: '60px',
+    right: '30px',
     top: topList[v].toString() + '%',
     bottom: topList[n - v - 1].toString() + '%',
   };
@@ -216,7 +218,9 @@ let myChart: echarts.ECharts;
 onMounted(() => {
   var option = {
     tooltip: {
+      show: true,
       trigger: 'axis',
+      formatter: '{a} {c}',
     },
     axisPointer: {
       link: { xAxisIndex: 'all' },
@@ -225,6 +229,7 @@ onMounted(() => {
       {
         data: xList,
         show: false,
+        gridValue: 0,
       },
       {
         data: xList,
@@ -237,28 +242,68 @@ onMounted(() => {
         axisLine: {
           show: true,
           symbol: ['none', 'arrow'],
+          onZero: false,
         },
         gridIndex: 2,
       },
     ],
+    // 需要处理
     yAxis: [
       {
+        type: 'value',
+        boundaryGap: ['1', '1'],
+        minInterval: 1,
+        nameGap: -24,
+        nameTextStyle: {
+          align: 'left',
+          padding: [0, 0, 0, 12],
+        },
         axisLine: {
           show: true,
           symbol: ['none', 'arrow'],
         },
+        axisLabel: {
+          showMinLabel: false,
+          showMaxLabel: false,
+        },
+        gridValue: 0,
+        splitArea: { show: true },
       },
       {
+        type: 'value',
+        boundaryGap: ['1', '1'],
+        minInterval: 1,
+        nameGap: -24,
+        nameTextStyle: {
+          align: 'left',
+          padding: [0, 0, 0, 12],
+        },
         axisLine: {
           show: true,
-          symbol: ['none', 'arrow'],
+          symbol: ['none', 'none'],
+        },
+        axisLabel: {
+          showMinLabel: false,
+          showMaxLabel: false,
         },
         gridIndex: 1,
       },
       {
+        type: 'value',
+        boundaryGap: ['1', '1'],
+        minInterval: 1,
+        nameGap: -24,
+        nameTextStyle: {
+          align: 'left',
+          padding: [0, 0, 0, 12],
+        },
         axisLine: {
           show: true,
-          symbol: ['none', 'arrow'],
+          symbol: ['none', 'none'],
+        },
+        axisLabel: {
+          showMinLabel: false,
+          showMaxLabel: false,
         },
         gridIndex: 2,
       },
@@ -266,20 +311,20 @@ onMounted(() => {
     grid: gridValue,
     series: [
       {
+        name: 'ACU_HVAC_AirWindSet',
         type: 'line',
-        step: 'start',
         data: yList,
       },
       {
+        name: 'abcasdf',
         type: 'line',
-        step: 'start',
         data: yList1,
         xAxisIndex: 1,
         yAxisIndex: 1,
       },
       {
+        name: 'asreyzdsf',
         type: 'line',
-        step: 'start',
         data: yList2,
         xAxisIndex: 2,
         yAxisIndex: 2,
@@ -304,11 +349,11 @@ onMounted(() => {
   };
   myChart = echarts.init(canvas.value);
   myChart.setOption(option);
-  window.addEventListener('resize', myChart.resize);
+  window.addEventListener('resize', myChart.resize as () => void);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', myChart.resize);
+  window.removeEventListener('resize', myChart.resize as () => void);
 });
 
 // 定义两个变量，分别表示当前的选项卡，以及侧边栏是否展开
