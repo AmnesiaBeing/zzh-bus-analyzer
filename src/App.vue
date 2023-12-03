@@ -185,16 +185,8 @@ import { onUnmounted } from 'vue';
 
 const canvas = ref();
 
-const testdata = [
-  [0, 0],
-  [1, 0],
-  [2, 0],
-  [3, 1],
-  [4, 1],
-  [5, 0],
-];
-const xList = testdata.map((item) => item[0]);
-const yList = testdata.map((item) => item[1]);
+const xList = [...Array(2000).keys()];
+const yList = xList.map((item) => ((item * item) % 5) % 2);
 const yList1 = yList.map((v) => v + 1);
 const yList2 = yList.map((v) => 1 - v);
 
@@ -228,122 +220,133 @@ onMounted(() => {
     xAxis: [
       {
         data: xList,
-        show: false,
+        show: true,
         gridValue: 0,
       },
+      // {
+      //   data: xList,
+      //   show: false,
+      //   gridIndex: 1,
+      // },
+      // {
+      //   data: xList,
+      //   name: '时间',
+      //   axisLine: {
+      //     show: true,
+      //     symbol: ['none', 'arrow'],
+      //     onZero: false,
+      //   },
+      //   gridIndex: 2,
+      // },
+    ],
+    // 需要处理
+    yAxis: [
       {
-        data: xList,
-        show: false,
-        gridIndex: 1,
-      },
-      {
-        data: xList,
-        name: '时间',
+        type: 'category',
+        boundaryGap: ['1', '1'],
+        minInterval: 1,
+        nameGap: -24,
+        nameTextStyle: {
+          align: 'left',
+          padding: [0, 0, 0, 12],
+        },
         axisLine: {
           show: true,
           symbol: ['none', 'arrow'],
           onZero: false,
         },
-        gridIndex: 2,
+        axisLabel: {
+          showMinLabel: false,
+          showMaxLabel: false,
+        },
+        // gridValue: 0,
+        position: 'left',
+        // splitArea: { show: true },
       },
+      // {
+      //   type: 'value',
+      //   boundaryGap: ['1', '1'],
+      //   minInterval: 1,
+      //   nameGap: -24,
+      //   nameTextStyle: {
+      //     align: 'left',
+      //     padding: [0, 0, 0, 12],
+      //   },
+      //   axisLine: {
+      //     show: true,
+      //     symbol: ['none', 'none'],
+      //     onZero: false,
+      //   },
+      //   axisLabel: {
+      //     showMinLabel: false,
+      //     showMaxLabel: false,
+      //   },
+      //   position: 'left',
+      //   // gridIndex: 1,
+      // },
+      // {
+      //   type: 'value',
+      //   boundaryGap: ['1', '1'],
+      //   minInterval: 1,
+      //   nameGap: -24,
+      //   nameTextStyle: {
+      //     align: 'left',
+      //     padding: [0, 0, 0, 12],
+      //   },
+      //   axisLine: {
+      //     show: true,
+      //     symbol: ['none', 'none'],
+      //     onZero: false,
+      //   },
+      //   axisLabel: {
+      //     showMinLabel: false,
+      //     showMaxLabel: false,
+      //   },
+      //   position: 'left',
+      //   // gridIndex: 2,
+      // },
     ],
-    // 需要处理
-    yAxis: [
-      {
-        type: 'value',
-        boundaryGap: ['1', '1'],
-        minInterval: 1,
-        nameGap: -24,
-        nameTextStyle: {
-          align: 'left',
-          padding: [0, 0, 0, 12],
-        },
-        axisLine: {
-          show: true,
-          symbol: ['none', 'arrow'],
-        },
-        axisLabel: {
-          showMinLabel: false,
-          showMaxLabel: false,
-        },
-        gridValue: 0,
-        splitArea: { show: true },
-      },
-      {
-        type: 'value',
-        boundaryGap: ['1', '1'],
-        minInterval: 1,
-        nameGap: -24,
-        nameTextStyle: {
-          align: 'left',
-          padding: [0, 0, 0, 12],
-        },
-        axisLine: {
-          show: true,
-          symbol: ['none', 'none'],
-        },
-        axisLabel: {
-          showMinLabel: false,
-          showMaxLabel: false,
-        },
-        gridIndex: 1,
-      },
-      {
-        type: 'value',
-        boundaryGap: ['1', '1'],
-        minInterval: 1,
-        nameGap: -24,
-        nameTextStyle: {
-          align: 'left',
-          padding: [0, 0, 0, 12],
-        },
-        axisLine: {
-          show: true,
-          symbol: ['none', 'none'],
-        },
-        axisLabel: {
-          showMinLabel: false,
-          showMaxLabel: false,
-        },
-        gridIndex: 2,
-      },
-    ],
-    grid: gridValue,
+    // grid: gridValue,
+    grid: {
+      left: '60px',
+      right: '30px',
+    },
     series: [
       {
         name: 'ACU_HVAC_AirWindSet',
         type: 'line',
         data: yList,
+        simbol: 'none',
       },
       {
         name: 'abcasdf',
         type: 'line',
         data: yList1,
-        xAxisIndex: 1,
-        yAxisIndex: 1,
+        simbol: 'none',
+        // xAxisIndex: 1,
+        // yAxisIndex: 1,
       },
       {
         name: 'asreyzdsf',
         type: 'line',
         data: yList2,
-        xAxisIndex: 2,
-        yAxisIndex: 2,
+        simbol: 'none',
+        // xAxisIndex: 2,
+        // yAxisIndex: 2,
       },
     ],
     dataZoom: [
-      {
-        show: true,
-        type: 'slider',
-        xAxisIndex: [0, 1, 2],
-      },
+      // {
+      //   show: true,
+      //   type: 'slider',
+      //   xAxisIndex: [0, 1, 2],
+      // },
       {
         type: 'inside', // 支持内部鼠标滚动平移
-        startValue: 0,
-        endValue: 4,
-        zoomOnMouseWheel: false, // 关闭滚轮缩放
+        zoomOnMouseWheel: true, // 关闭滚轮缩放
         moveOnMouseWheel: true, // 开启滚轮平移
         moveOnMouseMove: true, // 鼠标移动能触发数据窗口平移
-        xAxisIndex: [0, 2],
+        // xAxisIndex: [0, 1, 2],
       },
     ],
   };

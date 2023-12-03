@@ -818,6 +818,13 @@ camel-case@^3.0.0:
     no-case "^2.2.0"
     upper-case "^1.1.1"
 
+candied@^2.1.0, candied@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/candied/-/candied-2.2.0.tgz#7727712482e8a20f1075674681f50c2d42e66835"
+  integrity sha512-r2C6Ekh7nF8TbgLFL94r1SMWijiYKS8MBw6yb99FKVXvpa8OeH15WgRwV6PfPKENVAsMFQP0YU6SqemkUrWmXQ==
+  dependencies:
+    candied "^2.1.0"
+
 caniuse-lite@^1.0.30001538, caniuse-lite@^1.0.30001541:
   version "1.0.30001563"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001563.tgz#aa68a64188903e98f36eb9c56e48fba0c1fe2a32"
