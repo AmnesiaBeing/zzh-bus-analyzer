@@ -7,7 +7,7 @@
         {{ $q.platform.is.electron ? '(F)' : '' }}
         <q-menu>
           <q-list dense style="min-width: 120px">
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup @click="onFileOpenClick">
               <q-item-section>
                 {{ $t('menubar_project_open') }}
               </q-item-section>
@@ -363,6 +363,21 @@ onUnmounted(() => {
 const sidebar_tab = ref('files');
 const splitterModel = ref(0);
 // const splitterModelShadow = ref(0);
+
+import { Dbc } from 'candied';
+
+// 处理打开文件功能
+const onFileOpenClick = (evt: Event, go: (opts: any) => Promise<any>) => {
+  const [fileHandler] = window?.showOpenFilePicker({
+    types: [
+      {
+        description: '总线描述格式',
+      },
+    ],
+  });
+  const file = fileHandler.getFile();
+  console.log(file);
+};
 </script>
 
 <style lang="scss">
