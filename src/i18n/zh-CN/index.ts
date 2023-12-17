@@ -20,4 +20,7 @@ export default {
   menubar_help: '帮助',
   menubar_help_help: '帮助',
   menubar_help_about: '关于',
+
+  open_dialog_bus_description_file_format: '总线描述格式',
+  open_dialog_bus_record_file_format: '报文记录文件',
 };

@@ -173,6 +173,13 @@
     <div class="col text-center text-weight-bold">底部状态栏（未完成）</div>
     <q-space />
   </footer>
+
+  <input
+    type="file"
+    id="fileSelector"
+    accept=".dbc, .arxml, .asc, .blf, .pcap, application/vnd.tcpdump.pcap"
+    style="display: none"
+  />
 </template>
 
 <script setup lang="ts">
@@ -366,17 +373,36 @@ const splitterModel = ref(0);
 
 import { Dbc } from 'candied';
 
+// const fileSelector = ref();
+
 // 处理打开文件功能
-const onFileOpenClick = (evt: Event, go: (opts: any) => Promise<any>) => {
-  const [fileHandler] = window?.showOpenFilePicker({
-    types: [
-      {
-        description: '总线描述格式',
-      },
-    ],
-  });
-  const file = fileHandler.getFile();
-  console.log(file);
+const onFileOpenClick = async (evt: Event, go: (opts: any) => Promise<any>) => {
+  document.getElementById('fileSelector')?.click();
+  // const [fileHandler] = window?.showOpenFilePicker({
+  //   types: [
+  //     {
+  //       description:
+  //         t('open_dialog_bus_description_file_format') + '(*.dbc/*.arxml)',
+  //       accept: {
+  //         '*/*': ['.dbc', '.arxml'],
+  //       },
+  //     },
+  //     {
+  //       description:
+  //         t('open_dialog_bus_record_file_format') + '(*.asc/*.blf/*.pcap)',
+  //       accept: {
+  //         '*/*': ['.blf', '.asc', '.pcap'],
+  //       },
+  //     },
+  //   ],
+  //   excludeAcceptAllOption: true,
+  //   multiple: false,
+  // });
+  // // TODO: 异常处理
+  // const file = fileHandler.getFile();
+  // const dbc = new Dbc();
+  // const data = dbc.load(await file.text());
+  // console.log(data);
 };
 </script>
 
