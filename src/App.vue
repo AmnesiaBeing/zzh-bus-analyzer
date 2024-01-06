@@ -182,188 +182,112 @@
   />
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
-import * as echarts from 'echarts';
-import { onMounted } from 'vue';
-import { onUnmounted } from 'vue';
+
+import * as d3 from 'd3';
+
+import { onMounted, onUnmounted } from 'vue';
 
 const canvas = ref();
 
-const xList = [...Array(2000).keys()];
-const yList = xList.map((item) => ((item * item) % 5) % 2);
-const yList1 = yList.map((v) => v + 1);
-const yList2 = yList.map((v) => 1 - v);
+import test_data from './mock/test_d3.js';
 
-const g = 2;
-const p = 2;
-const n = 6;
-const topList = [...new Array(n).keys()].map(
-  (v) => p + ((100 - 2 * p + g) / n) * v
-);
-const gridValue = [...new Array(n).keys()].map((v) => {
-  return {
-    left: '60px',
-    right: '30px',
-    top: topList[v].toString() + '%',
-    bottom: topList[n - v - 1].toString() + '%',
-  };
-});
+function initCanvas() {
+  const width = 928;
+  const height = 500;
+  const marginTop = 20;
+  const marginRight = 20;
+  const marginBottom = 30;
+  const marginLeft = 30;
 
-let myChart: echarts.ECharts;
+  // 创建XY轴的范围定义，并将一定定义域映射到指定值域
+  const x = d3
+    .scaleLinear()
+    .domain([0, d3.max(test_data, (d) => d.time)])
+    .range([height - marginBottom, marginTop]);
+
+  // 创建X轴，位于底部，且每80单位尺寸绘制一个分割线
+  const xAxis = d3
+    .axisBottom(x)
+    .ticks(200 / 80)
+    .tickSizeOuter(0);
+  const y = d3.scaleLinear().domain([0, 1]).range([500, 200]);
+
+  const yAxis = d3.axisLeft(y).tickSizeOuter(0);
+
+  const line = d3
+    .line()
+    .x((d) => x(d.time))
+    .y((d) => y(d.value));
+
+  // function zoom(svg) {
+  //   const extent = [
+  //     [marginLeft, marginTop],
+  //     [width - marginRight, height - marginTop],
+  //   ];
+
+  //   svg.call(
+  //     d3
+  //       .zoom()
+  //       .scaleExtent([1, 8])
+  //       .translateExtent(extent)
+  //       .extent(extent)
+  //       .on('zoom', zoomed)
+  //   );
+
+  //   function zoomed(event) {
+  //     x.range(
+  //       [marginLeft, width - marginRight].map((d) => event.transform.applyX(d))
+  //     );
+  //     svg
+  //       .selectAll('.bars rect')
+  //       .attr('x', (d) => x(d.letter))
+  //       .attr('width', x.bandwidth());
+  //     svg.selectAll('.x-axis').call(xAxis);
+  //   }
+  // }
+
+  // 开始绘图
+  const svg = d3
+    .select('.canvas')
+    .append('svg')
+    .attr('viewBox', [0, 0, width, height])
+    .attr('width', width)
+    .attr('height', height)
+    .attr('style', 'max-width: 100%; height: auto;');
+  // .call(zoom);
+
+  // 画坐标轴
+  svg
+    .append('g')
+    .attr('class', 'x-axis')
+    .attr('transform', `translate(0,${height - marginBottom})`)
+    .call(xAxis);
+
+  svg
+    .append('g')
+    .attr('class', 'y-axis')
+    .attr('transform', `translate(${marginLeft},0)`)
+    .call(yAxis)
+    .call((g) => g.select('.domain').remove());
+
+  svg
+    .append('path')
+    .attr('fill', 'none')
+    .attr('stroke', 'steelblue')
+    .attr('stroke-width', 1.5)
+    .attr('d', line(test_data));
+}
 
 onMounted(() => {
-  var option = {
-    tooltip: {
-      show: true,
-      trigger: 'axis',
-      formatter: '{a} {c}',
-    },
-    axisPointer: {
-      link: { xAxisIndex: 'all' },
-    },
-    xAxis: [
-      {
-        data: xList,
-        show: true,
-        gridValue: 0,
-      },
-      // {
-      //   data: xList,
-      //   show: false,
-      //   gridIndex: 1,
-      // },
-      // {
-      //   data: xList,
-      //   name: '时间',
-      //   axisLine: {
-      //     show: true,
-      //     symbol: ['none', 'arrow'],
-      //     onZero: false,
-      //   },
-      //   gridIndex: 2,
-      // },
-    ],
-    // 需要处理
-    yAxis: [
-      {
-        type: 'category',
-        boundaryGap: ['1', '1'],
-        minInterval: 1,
-        nameGap: -24,
-        nameTextStyle: {
-          align: 'left',
-          padding: [0, 0, 0, 12],
-        },
-        axisLine: {
-          show: true,
-          symbol: ['none', 'arrow'],
-          onZero: false,
-        },
-        axisLabel: {
-          showMinLabel: false,
-          showMaxLabel: false,
-        },
-        // gridValue: 0,
-        position: 'left',
-        // splitArea: { show: true },
-      },
-      // {
-      //   type: 'value',
-      //   boundaryGap: ['1', '1'],
-      //   minInterval: 1,
-      //   nameGap: -24,
-      //   nameTextStyle: {
-      //     align: 'left',
-      //     padding: [0, 0, 0, 12],
-      //   },
-      //   axisLine: {
-      //     show: true,
-      //     symbol: ['none', 'none'],
-      //     onZero: false,
-      //   },
-      //   axisLabel: {
-      //     showMinLabel: false,
-      //     showMaxLabel: false,
-      //   },
-      //   position: 'left',
-      //   // gridIndex: 1,
-      // },
-      // {
-      //   type: 'value',
-      //   boundaryGap: ['1', '1'],
-      //   minInterval: 1,
-      //   nameGap: -24,
-      //   nameTextStyle: {
-      //     align: 'left',
-      //     padding: [0, 0, 0, 12],
-      //   },
-      //   axisLine: {
-      //     show: true,
-      //     symbol: ['none', 'none'],
-      //     onZero: false,
-      //   },
-      //   axisLabel: {
-      //     showMinLabel: false,
-      //     showMaxLabel: false,
-      //   },
-      //   position: 'left',
-      //   // gridIndex: 2,
-      // },
-    ],
-    // grid: gridValue,
-    grid: {
-      left: '60px',
-      right: '30px',
-    },
-    series: [
-      {
-        name: 'ACU_HVAC_AirWindSet',
-        type: 'line',
-        data: yList,
-        simbol: 'none',
-      },
-      {
-        name: 'abcasdf',
-        type: 'line',
-        data: yList1,
-        simbol: 'none',
-        // xAxisIndex: 1,
-        // yAxisIndex: 1,
-      },
-      {
-        name: 'asreyzdsf',
-        type: 'line',
-        data: yList2,
-        simbol: 'none',
-        // xAxisIndex: 2,
-        // yAxisIndex: 2,
-      },
-    ],
-    dataZoom: [
-      // {
-      //   show: true,
-      //   type: 'slider',
-      //   xAxisIndex: [0, 1, 2],
-      // },
-      {
-        type: 'inside', // 支持内部鼠标滚动平移
-        zoomOnMouseWheel: true, // 关闭滚轮缩放
-        moveOnMouseWheel: true, // 开启滚轮平移
-        moveOnMouseMove: true, // 鼠标移动能触发数据窗口平移
-        // xAxisIndex: [0, 1, 2],
-      },
-    ],
-  };
-  myChart = echarts.init(canvas.value);
-  myChart.setOption(option);
-  window.addEventListener('resize', myChart.resize as () => void);
+  initCanvas();
 });
 
 onUnmounted(() => {
-  window.removeEventListener('resize', myChart.resize as () => void);
+  // window.removeEventListener('resize', myChart.resize as () => void);
 });
 
 // 定义两个变量，分别表示当前的选项卡，以及侧边栏是否展开
@@ -376,33 +300,8 @@ import { Dbc } from 'candied';
 // const fileSelector = ref();
 
 // 处理打开文件功能
-const onFileOpenClick = async (evt: Event, go: (opts: any) => Promise<any>) => {
+const onFileOpenClick = async (evt, go) => {
   document.getElementById('fileSelector')?.click();
-  // const [fileHandler] = window?.showOpenFilePicker({
-  //   types: [
-  //     {
-  //       description:
-  //         t('open_dialog_bus_description_file_format') + '(*.dbc/*.arxml)',
-  //       accept: {
-  //         '*/*': ['.dbc', '.arxml'],
-  //       },
-  //     },
-  //     {
-  //       description:
-  //         t('open_dialog_bus_record_file_format') + '(*.asc/*.blf/*.pcap)',
-  //       accept: {
-  //         '*/*': ['.blf', '.asc', '.pcap'],
-  //       },
-  //     },
-  //   ],
-  //   excludeAcceptAllOption: true,
-  //   multiple: false,
-  // });
-  // // TODO: 异常处理
-  // const file = fileHandler.getFile();
-  // const dbc = new Dbc();
-  // const data = dbc.load(await file.text());
-  // console.log(data);
 };
 </script>
 
