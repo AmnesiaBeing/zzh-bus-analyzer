@@ -196,8 +196,8 @@ const canvas = ref();
 import test_data from './mock/test_d3.js';
 
 function initCanvas() {
-  const width = 928;
-  const height = 500;
+  const width = canvas.value.clientWidth;
+  const height = canvas.value.clientHeight;
   const marginTop = 20;
   const marginRight = 20;
   const marginBottom = 30;
@@ -207,48 +207,24 @@ function initCanvas() {
   const x = d3
     .scaleLinear()
     .domain([0, d3.max(test_data, (d) => d.time)])
-    .range([height - marginBottom, marginTop]);
+    .range([marginLeft, width - marginRight]);
 
   // 创建X轴，位于底部，且每80单位尺寸绘制一个分割线
-  const xAxis = d3
-    .axisBottom(x)
-    .ticks(200 / 80)
+  const xAxis = d3.axisBottom(x).ticks(10).tickSizeOuter(0);
+  const y = d3
+    .scaleLinear()
+    .domain([-1, 2])
+    .range([height - marginBottom, marginTop]);
+  const yAxis = d3
+    .axisLeft(y)
+    .ticks(4)
+    .tickValues(['a', 'b', 'c', 'd'])
     .tickSizeOuter(0);
-  const y = d3.scaleLinear().domain([0, 1]).range([500, 200]);
-
-  const yAxis = d3.axisLeft(y).tickSizeOuter(0);
 
   const line = d3
     .line()
     .x((d) => x(d.time))
     .y((d) => y(d.value));
-
-  // function zoom(svg) {
-  //   const extent = [
-  //     [marginLeft, marginTop],
-  //     [width - marginRight, height - marginTop],
-  //   ];
-
-  //   svg.call(
-  //     d3
-  //       .zoom()
-  //       .scaleExtent([1, 8])
-  //       .translateExtent(extent)
-  //       .extent(extent)
-  //       .on('zoom', zoomed)
-  //   );
-
-  //   function zoomed(event) {
-  //     x.range(
-  //       [marginLeft, width - marginRight].map((d) => event.transform.applyX(d))
-  //     );
-  //     svg
-  //       .selectAll('.bars rect')
-  //       .attr('x', (d) => x(d.letter))
-  //       .attr('width', x.bandwidth());
-  //     svg.selectAll('.x-axis').call(xAxis);
-  //   }
-  // }
 
   // 开始绘图
   const svg = d3
