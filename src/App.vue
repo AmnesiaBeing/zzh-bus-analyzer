@@ -156,7 +156,19 @@
         </q-tab-panel>
 
         <q-tab-panel name="search">
-          <div class="text-h4 q-mb-md">Alarms</div>
+          <q-table
+            flat
+            bordered
+            title="Signals"
+            dense
+            :rows="rows"
+            :columns="columns"
+            row-key="name"
+            :selected-rows-label="getSelectedString"
+            selection="multiple"
+            v-model:selected="selected"
+            hide-bottom
+          />
         </q-tab-panel>
       </q-tab-panels>
     </template>
@@ -191,6 +203,27 @@ import * as d3 from 'd3';
 
 import { onMounted, onUnmounted } from 'vue';
 
+const columns = [
+  {
+    name: 'color',
+    align: 'center',
+    label: '',
+    field: 'color',
+  },
+  { name: 'name', label: 'Signal Name', field: 'name', sortable: true },
+];
+
+const rows = [
+  {
+    color: '',
+    name: 'abc',
+  },
+  {
+    color: '',
+    name: 'aaaa',
+  },
+];
+
 const canvas = ref();
 
 import test_data from './mock/test_d3.js';
@@ -208,23 +241,30 @@ function initCanvas() {
     .scaleLinear()
     .domain([0, d3.max(test_data, (d) => d.time)])
     .range([marginLeft, width - marginRight]);
-
   // 创建X轴，位于底部，且每80单位尺寸绘制一个分割线
-  const xAxis = d3.axisBottom(x).ticks(10).tickSizeOuter(0);
-  const y = d3
+  const xAxis = d3.axisBottom(x).ticks(10);
+
+  const y1 = d3
     .scaleLinear()
     .domain([-1, 2])
-    .range([height - marginBottom, marginTop]);
-  const yAxis = d3
-    .axisLeft(y)
-    .ticks(4)
-    .tickValues(['a', 'b', 'c', 'd'])
-    .tickSizeOuter(0);
+    .range([height - marginBottom, (height - marginBottom) / 2]);
+  const yAxis1 = d3.axisLeft(y1).ticks(4).tickValues([0, 1, 2]);
 
-  const line = d3
+  const y2 = d3
+    .scaleLinear()
+    .domain([-1, 2])
+    .range([(height - marginBottom) / 2, marginTop]);
+  const yAxis2 = d3.axisLeft(y2).ticks(4).tickValues([0, 1, 2]);
+
+  const line1 = d3
     .line()
     .x((d) => x(d.time))
-    .y((d) => y(d.value));
+    .y((d) => y1(d.value));
+
+  const line2 = d3
+    .line()
+    .x((d) => x(d.time))
+    .y((d) => y2(d.value));
 
   // 开始绘图
   const svg = d3
@@ -247,7 +287,14 @@ function initCanvas() {
     .append('g')
     .attr('class', 'y-axis')
     .attr('transform', `translate(${marginLeft},0)`)
-    .call(yAxis)
+    .call(yAxis1)
+    .call((g) => g.select('.domain').remove());
+
+  svg
+    .append('g')
+    .attr('class', 'y-axis')
+    .attr('transform', `translate(${marginLeft},0)`)
+    .call(yAxis2)
     .call((g) => g.select('.domain').remove());
 
   svg
@@ -255,7 +302,14 @@ function initCanvas() {
     .attr('fill', 'none')
     .attr('stroke', 'steelblue')
     .attr('stroke-width', 1.5)
-    .attr('d', line(test_data));
+    .attr('d', line1(test_data));
+
+  svg
+    .append('path')
+    .attr('fill', 'none')
+    .attr('stroke', 'steelblue')
+    .attr('stroke-width', 1.5)
+    .attr('d', line2(test_data));
 }
 
 onMounted(() => {
@@ -338,5 +392,9 @@ aside {
   padding: 10px;
   width: 100%;
   height: calc(100vh - $TOPBAR_HEIGHT - $BOTTOMBAR_HEIGHT);
+}
+
+.q-tab-panel {
+  padding: 0 !important;
 }
 </style>
